@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUSTOP16</title>
+
+    <!-- google-icon -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- axios cdn -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- awesomefont -->
+    <link rel="stylesheet" href="fontawesome/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+        .material-icons {
+            font-family: 'Material Icons';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            /* Preferred icon size */
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+
+            /* Support for all WebKit browsers. */
+            -webkit-font-smoothing: antialiased;
+            /* Support for Safari and Chrome. */
+            text-rendering: optimizeLegibility;
+            /* Support for Firefox. */
+            -moz-osx-font-smoothing: grayscale;
+            /* Support for IE. */
+            font-feature-settings: 'liga';
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        :root {
+            --bgColor: black;
+            --eleColor: rgb(70, 70, 70);
+            --fColor: white;
+            --fColor2: rgb(172, 172, 172);
+        }
+
+
+
+        #app {
+            overflow-x: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #musicChoiceHeader {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            width: 50px;
+            height: 5px;
+            background: red;
+        }
+
+        .chartList {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            position: fixed;
+            right: 0;
+            width: 0%;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.9);
+            color: black;
+            transition: 0.3s;
+            z-index: 3;
+            overflow-y: scroll;
+        }
+
+        .chartList .logo {
+            padding: 30px 15px;
+        }
+
+        .chartList.show {
+            width: 200px;
+        }
+
+        .chartList_title {}
+
+        .chartList .chartList_choice {
+            display: none;
+        }
+
+        .chartList .chartList_item {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .chartList .chartList_choice:checked+.chartList_item {
+            display: none;
+        }
+
+
+        /*-----------------------------------*/
+
+        /* 至下 */
+        .musicList {
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-end;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            /* height: 80%; */
+            height: 80%;
+            overflow-x: scroll;
+        }
+
+
+        /* 至下 */
+        .musicList_inner {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: flex-end;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+
+        .musicList .musicChoice {
+            display: none;
+        }
+
+        .musicList .musicChoice:checked+.musicList_item {
+            transform: scale(1.2);
+            opacity: 1;
+        }
+
+        /* 至左 */
+        /* .musicList .musicList_item {
+            flex-shrink: 0;
+            width: 100%;
+            height: 20%;
+            box-sizing: border-box;
+            flex-shrink: 0;
+            transform: scale(0.7);
+            transition: 0.5s;
+        } */
+
+        /* 至下 */
+        .musicList .musicList_item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
+            flex-shrink: 0;
+            width: 23%;
+            /* height: 100%; */
+            box-sizing: border-box;
+            flex-shrink: 0;
+            transition: 0.5s;
+            transform-origin: bottom;
+            padding: 0 5px 20px;
+            transform: scale(0.9);
+            opacity: 0.5;
+        }
+
+        .musicList_item .item_content {}
+
+        .musicList_item p {
+            font-size: 12px;
+        }
+
+
+        .item_img {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            /* display: none; */
+        }
+
+        /* 至左 */
+        /* .item_img img {
+            height: 100%;
+        } */
+
+        /* 至下 */
+        .item_img img {
+            width: 100%;
+        }
+
+        /*--------------------------------*/
+
+        .title {
+            margin: 0px 0 20px;
+        }
+
+        /*--------------------------------*/
+
+        .showMusicData {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* height: calc(100vh - 280px); */
+            /* height: 55%; */
+            margin-top: 0vh;
+            /* width: 100vw; */
+            width: 100%;
+            padding: 0 30px;
+            box-sizing: border-box;
+            line-height: 1.1;
+        }
+
+        .showMusicData .showMusicData_title {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 32%;
+            margin-bottom: 5vh;
+        }
+
+        .showMusicData .showMusicData_title p {
+            font-size: 12px;
+            margin-bottom: 7px;
+        }
+
+        .showMusicData .showMusicData_title h3 {
+            font-size: 20px;
+            letter-spacing: 7px;
+        }
+
+        .showMusicData_img {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* height: 200px; */
+            /* height: 10%; */
+            height: 53%;
+            border-radius: 3px;
+            box-shadow: -5px 8px 17px -3px rgb(0 0 0 / 60%);
+            transition: 0.5s;
+            max-width: 250px;
+            min-height: 250px;
+        }
+
+        .showMusicData_img_inner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: 0.7s;
+            height: 100%;
+            width: 100%;
+        }
+
+        .showMusicData_img.ani {
+            border-radius: 50%;
+        }
+
+        .showMusicData_img_inner.ani {
+            position: relative;
+            border: 5px solid white;
+            border-radius: 50%;
+            overflow: hidden;
+            height: 95%;
+            width: 95%;
+            animation-name: cdAnimation;
+            animation-duration: 5s;
+            animation-delay: 1s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+        }
+
+        .showMusicData_img_inner.ani::before {
+            position: absolute;
+            content: "";
+            height: 17px;
+            width: 17px;
+            background: rgb(180, 180, 180);
+            border: 3px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+        }
+
+        .showMusicData_img.ani::after {
+            position: absolute;
+            content: "==";
+            font-size: 600;
+            color: black;
+            top: 0;
+            right: 0;
+            height: 3px;
+            width: 40%;
+            background: white;
+            transform: rotate(-45deg);
+            transform-origin: right;
+            z-index: 1;
+            border-radius: 5px;
+            animation-name: rotateAnimation;
+            animation-duration: 1s;
+            animation-delay: 1s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+            border: 1px solid black;
+        }
+
+        .showMusicData_img.ani::before {
+            position: absolute;
+            content: "";
+            top: -5px;
+            right: -3px;
+            height: 10px;
+            width: 10px;
+            /* background: rgb(255, 102, 102); */
+            background: #09c8ee;
+            border-radius: 50%;
+            z-index: 2;
+            animation-name: rotateAnimation;
+            animation-duration: 1s;
+            animation-delay: 1s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+            border: 1px solid black;
+        }
+
+        @keyframes cdAnimation {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(90deg);
+            }
+
+            50% {
+                transform: rotate(180deg);
+            }
+
+            75% {
+                transform: rotate(270deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes rotateAnimation {
+            0% {
+                transform: rotate(-45deg);
+            }
+
+            25% {
+                transform: rotate(-43deg);
+            }
+
+            50% {
+                transform: rotate(-47deg);
+            }
+
+            75% {
+                transform: rotate(-44deg);
+            }
+
+            100% {
+                transform: rotate(-46deg);
+            }
+        }
+
+        .showMusicData_img img {
+            width: 100%;
+        }
+
+        .showMusicData_content {
+            margin-top: 25px;
+            max-width: 250px;
+            height: 20%;
+            /* padding: 0 45px; */
+        }
+
+        .showMusicData_content .inf {
+            height: 60%;
+        }
+
+        .showMusicData_content .inf p {
+            font-size: 12px;
+            margin-top: 12px;
+            color: #9e9e9e;
+            transform: translateY(0%);
+            transition: 0.5s;
+        }
+
+        .showMusicData_content .inf h1 {
+            font-size: 16px;
+            font-weight: normal;
+            transform: translateY(0%);
+            transition: 0.5s;
+        }
+
+        .control {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+            z-index: 2;
+            height: 40%;
+        }
+
+        .control div,
+        .control a {
+            background: none;
+            border: none;
+            color: #09c8ee;
+            margin: 0 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+
+        .control span {
+            margin-left: 5px;
+        }
+
+        .control .kkboxPlay {
+            background: #09c8ee;
+            color: var(--fColor);
+            border-radius: 3px;
+        }
+
+        .control .youtubePlay {
+            background: #f70000;
+            color: var(--fColor);
+            border-radius: 3px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* height: 75px; */
+            height: 10%;
+            /* width: 100vw; */
+            width: 100%;
+            padding: 0 30px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        header div {
+            width: 30%;
+        }
+
+        .logo {
+            font-family: 'Righteous', cursive;
+            font-size: 23px;
+            text-transform: uppercase;
+            color: #09c8ee;
+            font-weight: 600;
+        }
+
+        .title {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+
+
+        .title p {
+            font-size: 12px;
+        }
+
+        .title h3 {
+            font-size: 20px;
+            letter-spacing: 7px;
+        }
+
+        #burger {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        /*----------------------------*/
+
+        #bg {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            z-index: -1;
+            height: 100vh;
+            width: 100vw;
+            opacity: 1;
+            transition: 0.3s;
+        }
+
+        #bg.hide {
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        #bg .mask {
+            position: fixed;
+            height: 100vh;
+            width: 100vw;
+            background: white;
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        #bg img {
+            width: 100%;
+            height: auto;
+            filter: opacity(.4);
+        }
+
+        @media (orientation: portrait) {
+            #bg img {
+                height: 100%;
+                width: auto;
+                filter: opacity(.4);
+            }
+        }
+
+        .aniDown {
+            transform: translateY(-100%);
+            transition: 0.5s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app">
+        <!-- 排行榜表單 -->
+        <div class="chartList">
+            <div class="logo">
+                MUSTOP16
+            </div>
+            <template v-for="chart in chartPlaylists">
+                <input type="radio" name="chartList_choice" class="chartList_choice" v-bind:id="chart.id"
+                    v-bind:value="chart.id" v-model="nowChoiceChart">
+                <label class="chartList_item" v-bind:for="chart.id" v-on:click="hideMenu()">
+                    {{chart.title}}
+                </label>
+            </template>
+        </div>
+
+        <!-- {{nowChoiceChart}}-->
+
+        <div id="bg">
+            <div class="mask"></div>
+            <img v-bind:src="music_inf.album.artist.images[1].url" alt="">
+            <!-- <img v-bind:src="music_inf.album.images[2].url" alt=""> -->
+        </div>
+
+        <header>
+            <!-- logo -->
+            <div class="logo">
+                <!-- <img src="kkbox-rebrand-blue.svg" alt=""> -->
+                MUSTOP16
+            </div>
+            <!-- 標頭 -->
+            <!-- <div class="title">
+                <p>{{chartPlaylists_object[nowChoiceChart]}}</p>
+                <h3>第{{this.nowchoice_music*1+1}}名</h3>
+            </div> -->
+            <!-- 漢堡選單 -->
+            <div id="burger" v-on:click="showMenu()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor"
+                    class="bi bi-list" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z" />
+                </svg>
+            </div>
+        </header>
+
+
+        <!-- 撥放器 -->
+        <div class="showMusicData" v-on:click="hideMenu()">
+            <div class="showMusicData_title" v-on:click="hideMenu()">
+                <p>{{chartPlaylists_object[nowChoiceChart]}}</p>
+                <h3>第{{this.nowchoice_music*1+1}}名</h3>
+            </div>
+            <div id="showMusicData_img" v-bind:class="{ showMusicData_img: true, ani: playing }">
+                <div v-bind:class="{ showMusicData_img_inner: true, ani: playing }">
+                    <img v-bind:src="music_inf.album.images[2].url" alt="">
+                </div>
+            </div>
+            <div class="showMusicData_content">
+                <div class="inf">
+                    <h1>{{music_inf.name}}</h1>
+                    <p>{{music_inf.album.artist.name}}</p>
+                    <!-- <p>{{music_inf.youtubeID}}</p> -->
+                </div>
+                <div class="control">
+                    <div v-if="!playing" class="kkboxPlay" v-on:click="playMusic(music_inf.id)">
+                        <i class="fas fa-play"></i> <span>試聽</span>
+                    </div>
+                    <div v-else class="kkboxPlay" v-on:click="stopMusic()">
+                        <i class="fas fa-stop"></i> <span>停止</span>
+                    </div>
+                    <a class="youtubePlay" target="_blank"
+                        v-bind:href="'http://www.youtube.com/results?search_query='+ music_inf.name +' '+music_inf.album.artist.name">
+                        <i class="fab fa-youtube"></i> <span>Youtube</span>
+                    </a>
+                </div>
+                <div class="kkboxPlayer"></div>
+            </div>
+        </div>
+
+        <!-- 歌曲表單 -->
+        <div class="musicList" v-on:click="hideMenu()">
+            <div class="musicList_inner">
+                <template v-for="(list,index) in ListOfChart">
+                    <input v-bind:value="index" v-bind:id="list.id" type="radio" class="musicChoice" name="musicChoice"
+                        v-model="nowchoice_music">
+                    <label v-bind:for="list.id" class="musicList_item">
+                        <div class="item_img">
+                            <!-- 專輯圖片: -->
+                            <img v-bind:src="list.album.images[1].url" alt="">
+                        </div>
+                        <div class="item_content">
+                            <!-- 專輯名: -->
+                            <!-- <h5>{{list.album.name}}</h5> -->
+                            <!-- 歌名: -->
+                            <!-- <p>{{list.name}}</p> -->
+                            <!-- 創作者名: -->
+                            <!-- <p>{{list.album.artist.name}}</p> -->
+                            <!-- 創作者圖片: -->
+                            <!-- <img v-bind:src="list.album.artist.images[1].url" alt=""> -->
+                        </div>
+                    </label>
+                </template>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Vue 3.0 cdn -->
+    <script src="https://unpkg.com/vue@next"></script>
+
+    <script>
+        let vm = Vue.createApp({ data: () => ({ apiUrl: "https://api.kkbox.com", language: "TW", token: "pcSVNEuFYiE8QW7kXcI0xA==", chartPlaylists: {}, nowChoiceChart: "", chartPlaylists_object: {}, ListOfChart: {}, nowchoice_music: "", music_inf: {}, playing: !1 }), watch: { nowChoiceChart: async function () { this.ListOfChart = await this.getListOfChart(this.nowChoiceChart), this.bgAnimation(), this.music_inf = this.ListOfChart[0], this.stopMusic(), document.getElementsByClassName("musicList")[0].scrollTo(0, 0) }, nowchoice_music: async function () { this.bgAnimation(), this.music_inf = this.ListOfChart[this.nowchoice_music], this.stopMusic() } }, computed: {}, methods: { getChartPlaylists: function () { const t = { url: `${this.apiUrl}/v1.1/charts?territory=${this.language}`, method: "GET", headers: { accept: "application/json", authorization: `Bearer ${this.token}` } }; return axios(t).then(t => t.data.data).catch(t => (console.log(t), t)) }, getListOfChart: function (t) { const e = { url: `${this.apiUrl}/v1.1/charts/${t}/tracks?territory=${this.language}&limit=16`, method: "GET", headers: { accept: "application/json", authorization: `Bearer ${this.token}` } }; return axios(e).then(t => t.data.data).catch(t => (console.log(t), t)) }, getTrackData: function (t) { const e = { url: `${this.apiUrl}/v1.1/tracks/${t}?territory=${this.language}`, method: "GET", headers: { accept: "application/json", authorization: `Bearer ${this.token}` } }; return axios(e).then(t => (console.log(t.data), t.data)).catch(t => (console.log(t), t)) }, getHMS: function (t) { let e = this.addz(t % 60), s = this.addz(Math.floor(t / 60) % 60); return `${this.addz(Math.floor(t / 3600) % 60)}:${s}:${e}` }, addz: function (t) { return t < 10 ? "0" + t : t }, showMenu: function () { document.getElementsByClassName("chartList")[0].classList.add("show") }, hideMenu: function () { document.getElementsByClassName("chartList")[0].classList.remove("show") }, bgAnimation: function () { let t = document.getElementById("bg"); t.classList.add("hide"), setTimeout(() => { t.classList.remove("hide") }, 500) }, playMusic: function (t) { let e = document.createElement("iframe"); e.height = "100px", e.src = `https://widget.kkbox.com/v1/?id=${t}&type=song&terr=SG&lang=en&autoplay=true&loop=true`, e.allow = "autoplay", e.style.display = "none", document.getElementsByClassName("kkboxPlayer")[0].appendChild(e), this.playing = !0 }, stopMusic: function () { document.getElementsByClassName("kkboxPlayer")[0].innerHTML = "", this.playing = !1 } }, beforeCreate() { }, async created() { this.chartPlaylists = await this.getChartPlaylists(), this.nowChoiceChart = this.chartPlaylists[0].id; for (let t = 0; t < this.chartPlaylists.length; t++)this.chartPlaylists_object[this.chartPlaylists[t].id] = this.chartPlaylists[t].title; this.ListOfChart = await this.getListOfChart(this.nowChoiceChart), this.nowchoice_music = 0, this.music_inf = this.ListOfChart[this.nowchoice_music] }, beforeMount() { }, async mounted() { let t = document.getElementsByClassName("musicList")[0], e = (document.getElementsByClassName("musicList_inner")[0], document.getElementsByClassName("musicList_item")), s = document.getElementsByClassName("musicChoice"); t.addEventListener("wheel", e => { e.preventDefault(), t.scrollLeft += e.deltaY }), t.addEventListener("scroll", t => { let i = (t.target.scrollWidth - t.target.clientWidth) / e.length, a = Math.round(t.target.scrollLeft / i); s[a].checked = !0, this.nowchoice_music = s[a].value }); let i = document.getElementById("showMusicData_img"); i.style.width = `${i.offsetHeight}px` } }); vm.mount("#app");
+    </script>
+</body>
+
+</html>
